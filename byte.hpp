@@ -5,7 +5,7 @@
 
 	namespace Byte 
 	{
-		/* Модуль BYTE предназначен для работы с массивом байтов типа uint8_t */
+		/* Модуль Byte предназначен для работы с массивом байтов типа uint8_t */
 
 		class Array
 		{
@@ -56,38 +56,38 @@
 		
 		class Buffer : Array
 		{
-			/* Класс предназначен для записи данных в массив байт
-				и предоставления доступа к ним, а также их модификации. */
+			/* Класс предназначен для записи данных в
+				массив байт и предоставления доступа к ним. */
 
 			public:
 
 			/* Конструкторы и деструкторы класса */
 			
 				Buffer() : Array() {}
-				virtual ~Array() {}
+				virtual ~Buffer() {}
 
 			/* Селекторы класса */
 
 				int getLen() const;
 				int getFree() const;
 
-				uint8_t getValue(int index);
-				int getData(uint8_t *buf, int bufsize);
-				Array & getData(Array & item);
+				int getValue(int index) const;
+				int getData(uint8_t *buf, int bufsize) const;
+				Buffer & getData(Buffer & item) const;
 
 			/* Модификаторы класса */
 
 				void setValue(int index, uint8_t value);
 				void setData(uint8_t *buf, int bufsize);
-				void setData(const Array & item);
+				void setData(const Buffer & item);
 
 			/* Другие методы класса */
 			
 				int addData(uint8_t value);
 			   int addData(uint8_t *buf, int len);
-				int addData(const Array & item);
+				int addData(const Buffer & item);
 			
-		} // class Buffer
+		}; // class Buffer
 
 	}; // namespace Byte 
 
