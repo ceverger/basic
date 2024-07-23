@@ -15,6 +15,15 @@
 					m_end = nullptr;
 				}
 
+				Array::Array(uint8_t *buf, int bufsize)
+				{
+					/* Пользовательский конструктор класса */
+
+					m_pos = buf;
+					  cur = m_pos;
+					m_end = m_pos + bufsize;				
+				}
+
 				Array::Array(const Array & item)
 				{
 					/* Конструктор копирования */
@@ -28,6 +37,8 @@
 				{
 					/* Конструтор присваивания */
 
+					if(isInit()) return *this;
+
 					m_pos = item.m_pos;
 					  cur = item.cur;
 					m_end = item.m_end;
@@ -38,6 +49,8 @@
 				int Array::getSize() const
 				{
 					/* Получение размера массива байтов */
+
+					if(!isInit()) return 0;
 
 					return m_end - m_pos;
 				}
@@ -79,7 +92,8 @@
 					if(isInit()) return;
 
 					m_pos = buf;
-					m_end = buf + bufsize;				
+					  cur = m_pos;
+					m_end = m_pos + bufsize;	
 				}
 
 				void Array::setItem(const Array & item)
@@ -144,7 +158,7 @@
 
 					if(!isInit()) return -1;
 
-					return index < getSize() ? m_pos[index] : -1;				
+					return index < getLen() ? m_pos[index] : -1;	
 				}
 
 				int Buffer::getData(uint8_t *buf, int bufsize) const
@@ -239,7 +253,7 @@
 
 					int i = 0;
 
-					while(i < len && cur != m_end)
+					while(i < len && cur < m_end)
 					{
 						*cur++ = *buf++;
 						 i++;						

@@ -25,6 +25,7 @@
 			/* Конструкторы и деструкторы класса */
 			
 				Array();
+				Array(uint8_t *buf, int bufsize);
 				Array(const Array & item);
 				Array & operator=(const Array & item);
 
@@ -54,7 +55,7 @@
 		}; // class Array
 
 		
-		class Buffer : Array
+		class Buffer : public Array
 		{
 			/* Класс предназначен для записи данных в
 				массив байт и предоставления доступа к ним. */
@@ -89,6 +90,6 @@
 			
 		}; // class Buffer
 
-	}; // namespace Byte 
+	}; // namespace Byte
 
 #endif // BYTE_HPP
