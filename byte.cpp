@@ -128,6 +128,16 @@
 					return m_pos == nullptr || m_end == nullptr ? false : true;
 				}
 
+				bool Array::isReset() const
+				{
+					return cur == m_pos ? true : false;
+				}
+
+				bool Array::isComplete() const
+				{
+					return cur == m_end ? true : false;
+				}
+
 
 			/* Реализация методов класса Buffer */
 
@@ -170,7 +180,7 @@
 
 					int i = 0;
 
-					while(i < bufsize && i < getSize())
+					while(i < bufsize && i < getLen())
 					{
 						buf[i] = m_pos[i];
 						i++;

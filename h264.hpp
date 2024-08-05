@@ -1,53 +1,53 @@
-#include "basic.hpp"
+#include "byte.hpp"
 
 #ifndef H264_HPP
 #define H264_HPP
 
 	namespace H264 
 	{
-		class Parser;
 		class NalUnit;
 		class AccessUnit;
 
-		class Stream : public Basic
-		{
+		class Stream : public Byte::Array
+		{		
+			/* Данный класс управляет доступом к информации 
+				об access unit потока h264                   */
+
 			public:
 
 				/* Констркуторы и деструкторы класса */
 
-		     		Stream() : Basic() {}
+		     		Stream() : Byte::Array() {}
 					virtual ~Stream() {}
 
-				/* Селекторы класса */
+				/* Другие методы класса */
 
-					int nalUnitCount();
 					int accessUnitCount();
-
-		 		/* Другие методы класса */
-
-					Parser & parser(Parser & p);
+					AccessUnit & nextAccessUnit(AccessUnit & au);
+					AccessUnit & currentAccessUnit(AccessUnit & au);
 
 		}; // class Stream
 
 
-		class Parser : public Basic
+		class AccessUnit : public Byte::Array
 		{
 			public:
 
-			/* Конструкторы и деструкторы класса */
+				/* Конструкторы и деструкторы класса */
 
-				Parser() : Basic () {}
-				virtual ~Parser() {}
+					AccessUnit() : Byte::Array() {}
+					virtual ~AccessUnit() {}
 
-			/* Другие методы класса */
-				
-				AccessUnit & nextAccessUnit(AccessUnit & au);
-				NalUnit & nextNalUnit(NalUnit & nu);
+				/* Другие методы класса */
 
-		}; // class Parser
+					int nalUnitCount();
+					NalUnit & nextNalUnit(NalUnit & nu);
+					NalUnit & currentNalUnit(NalUnit & nu);
+			
+		}; // class AccessUnit
 
 
-		class NalUnit : public Basic
+		class NalUnit : public Byte::Array
 		{
 			private:
 
@@ -58,19 +58,14 @@
 
 			/* Конструкторы и деструкторы класса */
 
-				NalUnit() : Basic()
-				{
-					header = 0;
-					startCode = nullptr;
-				}
-
+				NalUnit();
 				virtual ~NalUnit() {}
 
 			/* Селекторы класса */		
 
-				uint8_t  getHeader() const { return *m_pos; }
-				uint8_t *getStartCode() const { return startCode; }
-				    int  getStartCodeLen() const { return m_pos - startCode; }
+				uint8_t  getHeader() const;
+				uint8_t *getStartCode() const;
+				    int  getStartCodeLen() const;
 
 				uint8_t getForbiddenBit() const;
 				uint8_t getReferenceIDC() const;
@@ -83,10 +78,10 @@
 
 			/* Другие методы класса */
 
-				int payload(char *buf, int bufsize);
-
-				virtual void init();
+				int payload(uint8_t *buf, int len);
 				virtual void clear();
+
+				void init();
 
 			/* Чекеры класса */
 	
@@ -95,68 +90,42 @@
 		}; // class NalUnit
 
 
-		class AccessUnit : public Basic
+		class Packer : public Byte::Buffer
 		{
-			public:
+			/* Данный класс упаковывает nal unit потока h264
+				в буфер используя один из режимов упаковки    */
 
-				/* Конструкторы и деструкторы класса */
-
-					AccessUnit() : Basic() {}
-
-					virtual ~AccessUnit() {}
-
-				/* Другие методы класса */
-
-					int naluCount();
-					NalUnit & nextNalUnit(NalUnit & nu);
-					NalUnit & currentNalUnit(NalUnit & nu);
-					
-			
-		}; // class AccessUnit
-
-
-		class Packer : Basic
-		{
 			public:
 				
-				enum { UnknowMode, StapaMode, FuaMode, SingleMode };
+				// Целочисленные идентификаторы режима упаковки 
+
+					enum { UnknowMode, StapaMode, FuaMode, SingleMode };
 
 			private:
 
-				int mode; // Текущий режим упаковки
+				int mode;   // Текущий режим упаковки
+				NalUnit nu; // Текущий обрабатываемый nal unit
 
 			public:
 
 				/* Конструкторы и деструкторы класса */
 
-					Packer() : Basic() 
-					{ 
-						mode = UnknowMode; 
-					}
-
+					Packer();
 					virtual ~Packer() {}
-
-				/* Селекторы класса */
-
-					int getMode() const { return mode;        }
-					int getLen()  const { return cur - m_pos; }
-					int getFree() const { return m_end - cur; }
 
 				/* Другие методы класса */
 
 					int pack(AccessUnit & au);
-					int data(void *buf, int bufsize);
 
 		}; // class Packer
 
-
-		class Unpacker : public Basic
+		class Unpacker : public Byte::Buffer
 		{
 			public:
 
 				/* Конструкторы и деструкторы класса */
 			
-					Unpacker();
+					Unpacker() : Byte::Buffer() {}
 					virtual ~Unpacker() {}
 
 				/* Другие методы классса */
@@ -166,24 +135,26 @@
 		}; // class Unpacker
 
 
-	uint8_t GetForbiddenBit(uint8_t header);
-	uint8_t GetReferenceIDC(uint8_t header);
-	uint8_t GetPayloadType(uint8_t header);
+	/* Внеклассовые функции для работы с заголовком nal unit */
 
-	uint8_t SetForbiddenBit(uint8_t forbiddenBit, uint8_t header);
-	uint8_t SetReferenceIDC(uint8_t referenceIDC, uint8_t header);
-	uint8_t SetPayloadType(uint8_t payloadType, uint8_t header);
+		uint8_t GetForbiddenBit(uint8_t header);
+		uint8_t GetReferenceIDC(uint8_t header);
+		uint8_t GetPayloadType(uint8_t header);
 
-	uint8_t GetStapaHeader(uint8_t header);
+		uint8_t SetForbiddenBit(uint8_t forbiddenBit, uint8_t header);
+		uint8_t SetReferenceIDC(uint8_t referenceIDC, uint8_t header);
+		uint8_t SetPayloadType(uint8_t payloadType, uint8_t header);
 
-	uint8_t GetFuaIndicator(uint8_t header);
-	uint8_t GetFuaHeader(uint8_t header);
-	uint8_t GetFuaStartBit(uint8_t fuaHeader);
-	uint8_t GetFuaEndBit(uint8_t fuaHeader);
+		uint8_t GetStapaHeader(uint8_t header);
 
-	uint8_t SetFuaStartBit(uint8_t startBit, uint8_t fuaHeader);
-	uint8_t SetFuaEndBit(uint8_t endtBit, uint8_t fuaHeader);
-	uint8_t ResetFuaBits(uint8_t fuaHeader);
+		uint8_t GetFuaIndicator(uint8_t header);
+		uint8_t GetFuaHeader(uint8_t header);
+		uint8_t GetFuaStartBit(uint8_t fuaHeader);
+		uint8_t GetFuaEndBit(uint8_t fuaHeader);
+
+		uint8_t SetFuaStartBit(uint8_t startBit, uint8_t fuaHeader);
+		uint8_t SetFuaEndBit(uint8_t endtBit, uint8_t fuaHeader);
+		uint8_t ResetFuaBits(uint8_t fuaHeader);
 		
 	}; // namespace H264
 

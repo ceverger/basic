@@ -17,10 +17,9 @@
 			return -1;
 		}
 		
-		int fd;
-		int size;
-		uint8_t *store = (uint8_t *) *buf;
+		int fd, size;
 		struct stat file_info;
+		uint8_t *store = (uint8_t *) *buf;
 
 		fd = open(filename, O_RDONLY);
 		
@@ -36,12 +35,12 @@
 			return -1;
 		}
 		
-		size = (int) file_info.st_size;	
+		size = (int) file_info.st_size;
 		store = (uint8_t *) calloc(size, sizeof(uint8_t));
 
 		if(store == nullptr)
 		{
-			perror("calloc");
+			perror("calloc()");
 			return -1;
 		}
 
@@ -53,5 +52,5 @@
 
 		*buf = store;
 
-		return size;
+		 return size;
 	}
