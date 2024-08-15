@@ -12,7 +12,9 @@
 			/* Базовый класс для работы с массивом байт типа uint8_t.  
 				Класс предназначен исключительно для чтения массива и 
 				сохранения информации о нём. Модифицировать массив байт 
-				данный класс не может                                   */
+				данный класс не может */
+
+				friend class Buffer;
 
 			protected:
 
@@ -26,22 +28,20 @@
 			
 				Array();
 				Array(uint8_t *buf, int bufsize);
-				Array(const Array & item);
-				Array & operator=(const Array & item);
-
+				Array(const Array & array);
 				virtual ~Array() {}
 
 			/* Селекторы класса */
 
-				 int getSize() const;
-				 Array & getItem(Array & item) const;
+				virtual int getSize() const;
+				virtual Array & getItem(Array & array);
 
 			/* Модификаторы класса */
 
 				virtual void setPos(uint8_t *pos);
 				virtual void setEnd(uint8_t *end);
 				virtual void setBuf(uint8_t *buf, int bufsize);
-				virtual void setItem(const Array & item);
+				virtual Array & setItem(const Array & item);
 
 		 	/* Другие методы класса */
 
@@ -54,9 +54,13 @@
 				virtual bool isReset() const;
 				virtual bool isComplete() const;
 
+			/* Перегрузка операций */
+
+				virtual Array & operator=(const Array & item);
+
 		}; // class Array
 
-		
+
 		class Buffer : public Array
 		{
 			/* Класс предназначен для записи данных в
@@ -66,7 +70,9 @@
 
 			/* Конструкторы и деструкторы класса */
 			
-				Buffer() : Array() {}
+				Buffer();
+				Buffer(uint8_t *buf, int bufsize);
+				Buffer(const Array & array);
 				virtual ~Buffer() {}
 
 			/* Селекторы класса */
@@ -74,22 +80,24 @@
 				int getLen() const;
 				int getFree() const;
 
-				int getValue(int index) const;
-				int getData(uint8_t *buf, int bufsize) const;
-				Buffer & getData(Buffer & item) const;
+				virtual int getValue(int index) const;
+				virtual int getData(uint8_t *buf, int bufsize) const;
+				virtual Array & getData(Array & array);
 
 			/* Модификаторы класса */
 
-				void setValue(int index, uint8_t value);
-				void setData(uint8_t *buf, int bufsize);
-				void setData(const Buffer & item);
+				virtual void setValue(int index, uint8_t value);
+				virtual void setData(const uint8_t *buf, int len);
+				virtual Array & setData(Array & array);
 
 			/* Другие методы класса */
 			
-				int addData(uint8_t value);
-			   int addData(uint8_t *buf, int len);
-				int addData(const Buffer & item);
-			
+				virtual int addValue(uint8_t value);
+			   virtual int addData(uint8_t *buf, int len);
+				virtual Array & addData(Array & array);
+
+				virtual void zero();
+
 		}; // class Buffer
 
 	}; // namespace Byte

@@ -1,265 +1,293 @@
+#include <cstdio>
+#include <cstring>
 #include "byte.hpp"
 
 	namespace Byte 
 	{
-		/* Реализация методов классов модуля BYTE */
-
-			/* Реализация методов класса Array */
+		/* Пространство имён модуля Byte, который предназначен 
+			для управления массивом байт типа uint8_t */
 			
-				Array::Array()
-				{
-					/* Конструктор по умолчанию */
+			Array::Array()
+			{
+				/* Конструктор по умолчанию */
 
 					m_pos = nullptr;
 					  cur = nullptr;
 					m_end = nullptr;
-				}
+			}
 
-				Array::Array(uint8_t *buf, int bufsize)
-				{
-					/* Пользовательский конструктор класса */
+			Array::Array(uint8_t *buf, int bufsize)
+			{
+				/* Пользовательский конструктор класса */
 
 					m_pos = buf;
 					  cur = m_pos;
-					m_end = m_pos + bufsize;				
-				}
+					m_end = m_pos + bufsize;
+			}
 
-				Array::Array(const Array & item)
-				{
-					/* Конструктор копирования */
-					
-					m_pos = item.m_pos;
-					  cur = item.cur;
-					m_end = item.m_end;
-				}
+			Array::Array(const Array & array)
+			{
+				/* Конструктор копирования */
+				
+					m_pos = array.m_pos;
+					  cur = array.cur;
+					m_end = array.m_end;
+			}
 
-				Array & Array::operator=(const Array & item)
-				{
-					/* Конструтор присваивания */
-
-					if(isInit()) return *this;
+			Array & Array::operator=(const Array & item)
+			{
+				/* Конструтор присваивания */
 
 					m_pos = item.m_pos;
 					  cur = item.cur;
 					m_end = item.m_end;
 
 					return *this;
-				}
+			}
 
-				int Array::getSize() const
-				{
-					/* Получение размера массива байтов */
+			int Array::getSize() const
+			{
+				/* Получение размера массива байтов */
 
 					if(!isInit()) return 0;
 
 					return m_end - m_pos;
-				}
+			}
 
-				Array & Array::getItem(Array & item) const
-				{
-					/* Копирование данных в другой объект */
+			Array & Array::getItem(Array & array)
+			{
+				/* Инициализация параметров объекта array
+					значениями параметров текущего объекта */
 
-					item.m_pos = m_pos;
-					item.cur = cur;
-					item.m_end = m_end;
+					array.m_pos = m_pos;
+					array.cur = cur;
+					array.m_end = m_end;
 
-					return item;
-				}
+					return array;
+			}
 
-				void Array::setPos(uint8_t *pos)
-				{
-					/* Установка начальной и текущей позиции массива байт */
+			void Array::setPos(uint8_t *pos)
+			{
+				/* Установка начальной и текущей позиции массива байт */
 
 					if(isInit()) return;
 
 					m_pos = pos;
 					cur = m_pos;
-				}
+			}
 
-				void Array::setEnd(uint8_t *end)
-				{
-					/* Установка конечной позиции массива байт */
+			void Array::setEnd(uint8_t *end)
+			{
+				/* Установка конечной позиции массива байт */
 
 					if(isInit()) return;
 
 					m_end = end;					
-				}
+			}
 
-				void Array::setBuf(uint8_t *buf, int bufsize)
-				{
-					/* Установка начальной и конечной позиции массива байт */
-
-					if(isInit()) return;
+			void Array::setBuf(uint8_t *buf, int bufsize)
+			{
+				/* Установка начальной и конечной позиции массива байт */
 
 					m_pos = buf;
 					  cur = m_pos;
 					m_end = m_pos + bufsize;	
-				}
+			}
 
-				void Array::setItem(const Array & item)
-				{
-					/* Копирование данных из другого объекта */
-
-					if(isInit()) return;
+			Array & Array::setItem(const Array & item)
+			{
+				/* Инициализация параметров текущего объекта
+					значениями параметров объекта item */
 
 					m_pos = item.m_pos;
 					  cur = item.cur;
 					m_end = item.m_end;
-				}
 
-				void Array::reset()
-				{
-					/* Сброс текущей позиции в массиве байт */
-				
+					return *this;
+			}
+
+			void Array::reset()
+			{
+				/* Сброс текущей позиции в массиве байт */
+			
 					cur = m_pos;
-				}
+			}
 
-				void Array::clear()
-				{
-					/* Очистка данных объекта */
+			void Array::clear()
+			{
+				/* Очистка данных объекта */
 
 					m_pos = nullptr;
 					  cur = nullptr;
 					m_end = nullptr;
-				}
+			}
 
-				bool Array::isInit() const
-				{
+			bool Array::isInit() const
+			{
+				/* Проверка того, была ли произведена инициализация объекта */
+
 					return m_pos == nullptr || m_end == nullptr ? false : true;
-				}
+			}
 
-				bool Array::isReset() const
-				{
+			bool Array::isReset() const
+			{
+				/* Проверка того, cброшена ли текущая позиция в начало буфера */
+
 					return cur == m_pos ? true : false;
-				}
+			}
 
-				bool Array::isComplete() const
-				{
+			bool Array::isComplete() const
+			{
+				/* Проверка того, равна ли текущая позиция концу буфера */
+
 					return cur == m_end ? true : false;
-				}
+			}
 
 
-			/* Реализация методов класса Buffer */
+		/* Реализация методов класса Buffer */
 
-				int Buffer::getLen() const
-				{
-					/* Метод возвращает количество записанных
-						в буфер данных (валидных байт)         */
+			Buffer::Buffer() : Array()
+			{
+				// Конструктор по умолчанию
+			}
+
+			Buffer::Buffer(uint8_t *buf, int bufsize) : Array(buf, bufsize)
+			{
+				// Пользовательский конструктор
+			}
+
+			Buffer::Buffer(const Array & array) : Array(array)
+			{
+				// Конструктор копирования
+			}
+
+			int Buffer::getLen() const
+			{
+				/* Метод возвращает количество записанных
+					в буфер данных (валидных байт) */
 
 					if(!isInit()) return -1;
 
 					return cur - m_pos;
-				}
+			}
 
-				int Buffer::getFree() const
-				{
-					/* Метод возвращает количество свободного
-						места в буфере                         */
+			int Buffer::getFree() const
+			{
+				/* Метод возвращает количество 
+					свободного места в буфере */
 
 					if(!isInit()) return -1;
 
 					return m_end - cur;
-				}
+			}
 
-				int Buffer::getValue(int index) const
-				{
-					/* Метод возвращает значение элемента
-						буфера по его индексу              */
+			int Buffer::getValue(int index) const
+			{
+				/* Получение значения элемента массива байт */
 
-					if(!isInit()) return -1;
+					return m_pos[index];
+			}
 
-					return index < getLen() ? m_pos[index] : -1;	
-				}
-
-				int Buffer::getData(uint8_t *buf, int bufsize) const
-				{
-					/* Метод копирует данные в другой буфер 
-						и возвращет количество скопированных байт */
+			int Buffer::getData(uint8_t *buf, int bufsize) const
+			{
+				/* Метод копирует данные в другой буфер 
+					и возвращет количество скопированных байт */
 
 					if(!isInit()) return -1;
 
 					int i = 0;
 
-					while(i < bufsize && i < getLen())
+					while(i < getLen() && i < bufsize)
 					{
 						buf[i] = m_pos[i];
 						i++;
 					}
 
 					return i;
-				}
+			}
 
-				Buffer & Buffer::getData(Buffer & item) const
-				{
-					/* Метод инициализирует объект item
-						значениями данных текущего объекта */
+			Array & Buffer::getData(Array & array)
+			{
+				/* Метод копирует данные в буфер другого объекта
+					и возвращет количество скопированных байт */
 
-					if(item.isInit()) return item;
+					if(!isInit()) return *this;
+					if(!array.isInit()) return *this;
 
-					item.m_pos = m_pos;
-					item.cur = cur;
-					item.m_end = m_end;
+					uint8_t *pos = m_pos;
+					
+					array.reset();
 
-					return item;
-				}
+					while(pos < cur && array.cur < array.m_end)
+					{
+						*pos++ = *array.cur++;
+					}
 
-				void Buffer::setValue(int index, uint8_t value)
-				{
-					/* Метод инициализирует один из элементов буфера */
+					return *this;
+			}
+
+			void Buffer::setValue(int index, uint8_t value)
+			{
+				/* Метод инициализирует один из элементов буфера */
+
+					m_pos[index] = value;
+			}
+
+			void Buffer::setData(const uint8_t *buf, int bufsize)
+			{
+				/* Метод копирует данные в буфер текущего объекта */
 
 					if(!isInit()) return;
-					if(index > getLen()) return;
-
-					m_pos[index] = value;			
-				}
-
-				void Buffer::setData(uint8_t *buf, int bufsize)
-				{
-					/* Метод копирует данные в буфер текущего объекта */
-
-					if(!isInit()) return;
-
-					cur = m_pos;
 
 					int i = 0;
+
+					reset();
 
 					while(i < bufsize && cur < m_end)
 					{
 						*cur++ = *buf++;
 						 i++;
 					}
+			}
+
+			Array & Buffer::setData(Array & array)
+			{
+				if(!isInit()) return array;
+				if(!array.isInit()) return array;
+
+				reset();
+
+				uint8_t *pos = array.m_pos;
+
+				while(pos < array.cur && cur < m_end)
+				{
+					*pos++ = *cur++;
 				}
 
-				void Buffer::setData(const Buffer & item)
-				{
-					/* Метод копирует данные в буфер из другого объекта */
+				return array;
+			}
 
-					if(isInit()) return;
-
-					m_pos = item.m_pos;
-					cur = item.cur;
-					m_end = item.m_end;
-				}
-
-				int Buffer::addData(uint8_t value)
-				{
-					/* Метод добавляет новый валидный элемент
-						в конец буфера                         */
+			int Buffer::addValue(uint8_t value)
+			{
+				/* Метод добавляет новый валидный 
+					элемент в конец буфера */
 
 					if(!isInit()) return -1;
-					if(getFree() <= 0) return 0;
 
-					*cur++ = value;
+					if(cur < m_end)
+					{
+						*cur++ = value;
+						 return 1;
+					}
 
-					return 1;
-				}
+					return 0;
+			}
 
-			   int Buffer::addData(uint8_t *buf, int len)
-				{
-					/* Добавление новых данных в конец буфера */
+		   int Buffer::addData(uint8_t *buf, int len)
+			{
+				/* Добавление новых данных в конец буфера */
 
 					if(!isInit()) return -1;
-					if(getFree() <= 0) return 0;
 
 					int i = 0;
 
@@ -270,27 +298,31 @@
 					}
 					
 					return i;
-				}
+			}
 
-				int Buffer::addData(const Buffer & item)
-				{
-					/* Копирование новых данных в конец буфера 
-						из другого объекта                      */
-	
-					if(!isInit()) return -1;
-					if(!item.isInit()) return -1;
-					if(getFree() <= 0) return 0;
+			Array & Buffer::addData(Array & array)
+			{
+				/* Копирование новых данных в конец 
+					буфера из другого объекта */
 
-					int i = 0;
-					uint8_t *buf = item.m_pos;
+					if(!isInit()) return *this;
+					if(!array.isInit()) return *this;
 
-					while(i < item.getLen() && cur < m_end)
+					uint8_t *buf = array.m_pos;
+
+					while(buf < array.cur && cur < m_end)
 					{
 						*cur++ = *buf++;
-						 i++;
 					}
 					
-					return i;												
+					return *this;					
 				}
+
+			void Buffer::zero()
+			{
+				if(!isInit()) return;
+
+				bzero(m_pos, getSize());
+			}
 
 	}; // namespace Byte 

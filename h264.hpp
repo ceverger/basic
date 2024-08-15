@@ -5,6 +5,8 @@
 
 	namespace H264 
 	{
+		/* Пространство имён модуля для работы с видео-потоком H264  */
+
 		class NalUnit;
 		class AccessUnit;
 

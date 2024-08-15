@@ -25,10 +25,12 @@ int main(int argc, char *argv[])
 	stream.setBuf(buf, ret);
 	std::cout << stream.getSize() <<  std::endl;
 
-	while(stream.nextAccessUnit(au).isInit()) // Парсинг очередного access unit и вывод информации о нем
+	while(stream.nextAccessUnit(au).isInit())
 	{
-		printf("au_number = %d, au_size = %d\n", n, au.getSize());
-		n++;
+		// Парсинг очередного access unit и вывод информации о нем
+
+			printf("au_number = %d, au_size = %d\n", n, au.getSize());
+			n++;
 	}
 
 	return 0;
