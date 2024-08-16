@@ -100,6 +100,9 @@
 
 		}; // class Buffer
 
+
+		int copyBytes(uint8_t *src, uint8_t *dst, int len);
+
 	}; // namespace Byte
 
 #endif // BYTE_HPP

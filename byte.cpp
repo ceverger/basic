@@ -325,4 +325,17 @@
 				bzero(m_pos, getSize());
 			}
 
+			int copyBytes(uint8_t *dst, uint8_t *src, int len)
+			{
+				int i = 0;
+
+				while(i < len)
+				{
+					dst[i] = src[i];
+					i++;
+				}
+
+				return i;
+			}
+
 	}; // namespace Byte 
