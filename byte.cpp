@@ -325,7 +325,7 @@
 				bzero(m_pos, getSize());
 			}
 
-			int copyBytes(uint8_t *dst, uint8_t *src, int len)
+			int copyBytes(uint8_t *src, uint8_t *dst, int len)
 			{
 				int i = 0;
 
